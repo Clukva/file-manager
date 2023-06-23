@@ -20,11 +20,11 @@ export const exit = () => {
 };
 
 export const showCurDir = () => {
-  process.stdout.write(
-    `\nYou are currently in ${basePath.path /* process.cwd() */}\n\n`
-  );
+  process.stdout.write(`\nYou are currently in ${basePath.path}\n\n`);
 };
 
-const basePath = {
+export const getArr = (dataString) => [...dataString.split(" ")];
+
+export const basePath = {
   path: process.env.HOME,
 };
