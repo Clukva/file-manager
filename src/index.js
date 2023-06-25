@@ -2,6 +2,7 @@ import * as baseFunctions from "./base-functions.js";
 import * as basicOperations from "./basic-operations.js";
 import * as systemOperations from "./system-operations.js";
 import * as nwd from "./nwd.js";
+import * as zip from "./zip.js";
 import { printHash } from "./hash.js";
 
 baseFunctions.startManager();
@@ -50,6 +51,12 @@ process.stdin.on("data", async (data) => {
       break;
     case `hash`:
       printHash(inputCom[1]);
+      break;
+    case `compress`:
+      zip.compress(inputCom[1]);
+      break;
+    case `decompress`:
+      zip.decompress(inputCom[1]);
       break;
     default:
       process.stdout.write("\nInvalid input\n\n");
