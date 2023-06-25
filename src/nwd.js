@@ -1,16 +1,26 @@
 import * as baseFunctions from "./base-functions.js";
 import { stat, readdirSync, existsSync } from "fs";
 
-export const up = () => {
+export const up = (pathArg) => {
   let path = baseFunctions.basePath.path.toString();
-  if (path.includes(`\\`)) {
+  if (pathArg) {
+    process.stdout.write(`\nInvalid input\n\n`);
+    return;
+  } else if (path.includes(`\\`)) {
     baseFunctions.basePath.path = path.slice(0, path.lastIndexOf(`\\`));
+    if (baseFunctions.basePath.path.length === 2) {
+      baseFunctions.basePath.path += "\\";
+    }
   }
+
   baseFunctions.showCurDir();
 };
 
 export const cd = (path) => {
   if (!path) {
+    process.stdout.write(`\nInvalid input\n\n`);
+    return;
+  } else if (path.startsWith(".")) {
     process.stdout.write(`\nInvalid input\n\n`);
     return;
   } else if (path.includes(`\\`)) {
@@ -26,7 +36,13 @@ export const cd = (path) => {
     baseFunctions.basePath.path = path + "\\";
     baseFunctions.showCurDir();
   } else if (!path.includes(`\\`)) {
-    const newPath = baseFunctions.basePath.path + "\\" + path;
+    let newPath = "";
+    if (baseFunctions.basePath.path.length === 3) {
+      newPath = baseFunctions.basePath.path + path;
+    } else {
+      newPath = baseFunctions.basePath.path + "\\" + path;
+    }
+
     stat(newPath, (err) => {
       if (!err) {
         baseFunctions.basePath.path = newPath;
