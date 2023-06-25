@@ -1,5 +1,5 @@
 import * as baseFunctions from "./base-functions.js";
-import { stat } from "fs";
+import { stat, readdirSync, existsSync } from "fs";
 
 export const up = () => {
   let path = baseFunctions.basePath.path.toString();
@@ -22,13 +22,10 @@ export const cd = (path) => {
         process.stdout.write(`\nInvalid input\n\n`);
       }
     });
-  } else if (path == "C:" || "D:" || "c:" || "d:") {
-    baseFunctions.basePath.path = path;
+  } else if (path === "C:" || path === "D:" || path === "c:" || path === "d:") {
+    baseFunctions.basePath.path = path + "\\";
     baseFunctions.showCurDir();
-  } /*  else if (path == "D:") {
-    baseFunctions.basePath.path = path;
-    baseFunctions.showCurDir();
-  } */ else {
+  } else if (!path.includes(`\\`)) {
     const newPath = baseFunctions.basePath.path + "\\" + path;
     stat(newPath, (err) => {
       if (!err) {
@@ -39,4 +36,35 @@ export const cd = (path) => {
       }
     });
   }
+};
+
+export const ls = async () => {
+  const sourceFrom = baseFunctions.basePath.path;
+
+  if (!existsSync(sourceFrom)) {
+    throw new Error("FS operation failed");
+  }
+
+  const files = readdirSync(sourceFrom, { withFileTypes: true });
+  let arrFiles = [];
+
+  files.forEach((fileChunk) => {
+    arrFiles.push({
+      Name: fileChunk.name,
+      Type: fileChunk.isFile() ? "file" : "directory",
+    });
+  });
+  let arrFile = arrFiles
+    .filter((a) => a.Type === "file")
+    .sort((a, b) => {
+      a.Type.localeCompare(b.Type, "en", { numeric: true });
+    });
+  let arrFolder = arrFiles
+    .filter((a) => a.Type === "directory")
+    .sort((a, b) => {
+      a.Type.localeCompare(b.Type, "en", { numeric: true });
+    });
+
+  console.table([...arrFolder, ...arrFile]);
+  baseFunctions.showCurDir();
 };

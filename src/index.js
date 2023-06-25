@@ -1,4 +1,5 @@
 import * as baseFunctions from "./base-functions.js";
+import * as basicOperations from "./basic-operations.js";
 import * as nwd from "./nwd.js";
 
 baseFunctions.startManager();
@@ -20,6 +21,12 @@ process.stdin.on("data", async (data) => {
       break;
     case `cd`:
       nwd.cd(inputCom[1]);
+      break;
+    case `ls`:
+      nwd.ls();
+      break;
+    case `cat`:
+      basicOperations.cat(inputCom[1]);
       break;
     default:
       process.stdout.write("\nInvalid input\n\n");
