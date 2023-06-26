@@ -53,10 +53,10 @@ process.stdin.on("data", async (data) => {
       printHash(inputCom[1]);
       break;
     case `compress`:
-      zip.compress(inputCom[1]);
+      zip.compress(inputCom[1], inputCom[2]);
       break;
     case `decompress`:
-      zip.decompress(inputCom[1]);
+      zip.decompress(inputCom[1], inputCom[2]);
       break;
     default:
       process.stdout.write("\nInvalid input\n\n");

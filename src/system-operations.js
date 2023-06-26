@@ -7,15 +7,19 @@ export const osInf = async (data) => {
     switch (data) {
       case "--EOL":
         inf = JSON.stringify(os.EOL);
+        showCurDir();
         break;
       case "--username":
         inf = os.userInfo().username;
+        showCurDir();
         break;
       case "--architecture":
         inf = os.arch();
+        showCurDir();
         break;
       case "--homedir":
         inf = os.homedir();
+        showCurDir();
         break;
       case "--cpus":
         let cpusInf = os.cpus();
@@ -25,6 +29,7 @@ export const osInf = async (data) => {
           "Clock rate": `${(core.speed / 1000).toFixed(2)} GHz`,
         }));
         console.table(cpusInf);
+        showCurDir();
         return;
       default:
         process.stdout.write("\nInvalid input\n\n");
