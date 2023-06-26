@@ -1,6 +1,7 @@
 import fs from "fs";
 const { promises: fsProm, createReadStream, createWriteStream, stat } = fs;
 import { basePath, showCurDir } from "./base-functions.js";
+import pathNode from "path";
 
 export const cat = async (path) => {
   if (!path) {
@@ -12,30 +13,30 @@ export const cat = async (path) => {
   if (path.includes("\\")) {
     pathToFile = path;
   } else {
-    pathToFile = basePath.path + "\\" + path;
+    pathToFile = pathNode.join(basePath.path + path);
   }
 
   try {
     const content = await fsProm.readFile(pathToFile, "utf-8");
-    console.log("\n" + content + "\n");
+    console.log("\n" + content);
   } catch (err) {
-    process.stdout.write(`\nFS operation failed\n\n`);
+    process.stdout.write(`\nFS operation failed\n`);
   }
   showCurDir();
 };
 
 export const add = async (data) => {
-  const filePath = basePath.path + "\\" + data.toString();
+  const filePath = pathNode.join(basePath.path + "\\" + data.toString());
 
   try {
     if (fs.existsSync(filePath)) {
-      process.stdout.write(`\nFS operation failed\n\n`);
+      process.stdout.write(`\nFS operation failed\n`);
     } else {
       await fsProm.writeFile(filePath, "");
       console.log("\nFile created");
     }
   } catch (err) {
-    process.stdout.write(`\nFS operation failed\n\n`);
+    process.stdout.write(`\nFS operation failed\n`);
   }
   showCurDir();
 };
@@ -46,15 +47,14 @@ export const rn = async (renameFrom, renameTo) => {
     return;
   }
 
-  if (!renameFrom.includes("\\")) {
-    renameFrom = basePath.path + "\\" + renameFrom;
-  }
-  if (!renameTo.includes("\\")) {
-    renameTo = basePath.path + "\\" + renameTo;
-  }
+  const renameFolder = renameFrom
+    .toString()
+    .slice(0, renameFrom.lastIndexOf("\\"));
+  renameTo = pathNode.join(renameFolder, renameTo);
 
   if (fs.existsSync(renameTo) || !fs.existsSync(renameFrom)) {
-    process.stdout.write("\nFS operation failed\n");
+    process.stdout.write("\nFS operation failed\n\n");
+    return;
   }
 
   try {
@@ -71,10 +71,15 @@ export const cp = async (sourcePath, destinPath) => {
     process.stdout.write(`\nInvalid input\n\n`);
     return;
   }
+  if (!fs.existsSync(sourcePath)) {
+    process.stdout.write("\nFS operation failed\n\n");
+    return;
+  }
 
   stat(destinPath, (err, stats) => {
     if (err) {
-      console.error(err);
+      process.stdout.write(`\nInvalid input3\n\n`);
+
       return;
     }
 
@@ -85,7 +90,7 @@ export const cp = async (sourcePath, destinPath) => {
 
   const fileName = sourcePath.toString().slice(sourcePath.lastIndexOf("\\"));
 
-  if (fs.existsSync(destinPath + fileName)) {
+  if (fs.existsSync(pathNode.join(destinPath + fileName))) {
     process.stdout.write("\nFS operation failed\n\n");
     return;
   } else {
@@ -111,6 +116,10 @@ export const mv = async (sourcePath, destinPath) => {
     process.stdout.write(`\nInvalid input\n\n`);
     return;
   }
+  if (!fs.existsSync(sourcePath)) {
+    process.stdout.write("\nFS operation failed\n\n");
+    return;
+  }
 
   stat(destinPath, (err, stats) => {
     if (err) {
@@ -125,7 +134,7 @@ export const mv = async (sourcePath, destinPath) => {
 
   const fileName = sourcePath.toString().slice(sourcePath.lastIndexOf("\\"));
 
-  if (fs.existsSync(destinPath + fileName)) {
+  if (fs.existsSync(pathNode.join(destinPath + fileName))) {
     process.stdout.write("\nFS operation failed\n\n");
     return;
   } else {
@@ -161,7 +170,7 @@ export const rm = async (deletePath) => {
   }
 
   if (!deletePath.includes("\\")) {
-    deletePath = basePath.path + "\\" + deletePath;
+    deletePath = pathNode.join(basePath.path + "\\" + deletePath);
   }
 
   try {

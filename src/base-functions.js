@@ -1,3 +1,5 @@
+import path from "path";
+
 export const startManager = () => {
   process.stdout.write(`\nWelcome to the File Manager, ${getUsername()}!\n`);
   showCurDir();
@@ -13,14 +15,15 @@ export const getUsername = () => {
 
 export const exit = () => {
   process.stdout.write(
-    `\nThank you for using File Manager, ${getUsername()}, goodbye!\n`
+    `\nThank you for using File Manager, ${getUsername()}, goodbye!\n\n`
   );
-  showCurDir();
   process.exit();
 };
 
 export const showCurDir = () => {
-  process.stdout.write(`\nYou are currently in ${basePath.path}\n\n`);
+  process.stdout.write(
+    `\nYou are currently in ${path.resolve(basePath.path)}\n\n`
+  );
 };
 
 export const getArr = (dataString) => [...dataString.split(" ")];

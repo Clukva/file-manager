@@ -1,13 +1,14 @@
 import * as baseFunctions from "./base-functions.js";
 import { stat, readdirSync, existsSync } from "fs";
+import path from "path";
 
 export const up = (pathArg) => {
-  let path = baseFunctions.basePath.path.toString();
+  let pathUp = baseFunctions.basePath.path.toString();
   if (pathArg) {
     process.stdout.write(`\nInvalid input\n\n`);
     return;
-  } else if (path.includes(`\\`)) {
-    baseFunctions.basePath.path = path.slice(0, path.lastIndexOf(`\\`));
+  } else if (pathUp.includes(`\\`)) {
+    baseFunctions.basePath.path = pathUp.slice(0, pathUp.lastIndexOf(`\\`));
     if (baseFunctions.basePath.path.length === 2) {
       baseFunctions.basePath.path += "\\";
     }
@@ -16,31 +17,33 @@ export const up = (pathArg) => {
   baseFunctions.showCurDir();
 };
 
-export const cd = (path) => {
-  if (!path) {
+export const cd = (pathArg) => {
+  if (!pathArg || pathArg.startsWith(".")) {
     process.stdout.write(`\nInvalid input\n\n`);
     return;
-  } else if (path.startsWith(".")) {
-    process.stdout.write(`\nInvalid input\n\n`);
-    return;
-  } else if (path.includes(`\\`)) {
-    stat(path, (err) => {
+  } else if (pathArg.includes(`\\`)) {
+    stat(pathArg, (err) => {
       if (!err) {
-        baseFunctions.basePath.path = path;
+        baseFunctions.basePath.path = pathArg;
         baseFunctions.showCurDir();
       } else if (err.code === "ENOENT") {
         process.stdout.write(`\nInvalid input\n\n`);
       }
     });
-  } else if (path === "C:" || path === "D:" || path === "c:" || path === "d:") {
-    baseFunctions.basePath.path = path + "\\";
+  } else if (
+    pathArg === "C:" ||
+    pathArg === "D:" ||
+    pathArg === "c:" ||
+    pathArg === "d:"
+  ) {
+    baseFunctions.basePath.path = path.join(pathArg + "\\");
     baseFunctions.showCurDir();
-  } else if (!path.includes(`\\`)) {
+  } else if (!pathArg.includes(`\\`)) {
     let newPath = "";
     if (baseFunctions.basePath.path.length === 3) {
-      newPath = baseFunctions.basePath.path + path;
+      newPath = path.join(baseFunctions.basePath.path + pathArg);
     } else {
-      newPath = baseFunctions.basePath.path + "\\" + path;
+      newPath = path.join(baseFunctions.basePath.path + "\\" + pathArg);
     }
 
     stat(newPath, (err) => {
